@@ -1,0 +1,12 @@
+create extension if not exists pgcrypto;
+create table if not exists products(id uuid primary key default gen_random_uuid(),name text not null,category text default 'Mates',stock integer default 0,min_stock integer default 0,cost numeric(12,2) default 0,price numeric(12,2) default 0,created_at timestamptz default now());
+create table if not exists orders(id uuid primary key default gen_random_uuid(),customer text,product text,quantity integer default 1,total numeric(12,2) default 0,paid numeric(12,2) default 0,status text default 'possible',created_at timestamptz default now());
+create table if not exists transactions(id uuid primary key default gen_random_uuid(),type text not null check(type in('income','expense')),amount numeric(12,2) not null default 0,description text,created_at timestamptz default now());
+create table if not exists goals(id uuid primary key default gen_random_uuid(),title text not null,target numeric(12,2) default 0,current numeric(12,2) default 0,is_monthly boolean default true,created_at timestamptz default now());
+create table if not exists purchases(id uuid primary key default gen_random_uuid(),product text not null,quantity integer default 1,total numeric(12,2) default 0,supplier text,status text default 'pending',created_at timestamptz default now());
+alter table products enable row level security; alter table orders enable row level security; alter table transactions enable row level security; alter table goals enable row level security; alter table purchases enable row level security;
+create policy "auth products" on products for all to authenticated using(true) with check(true);
+create policy "auth orders" on orders for all to authenticated using(true) with check(true);
+create policy "auth transactions" on transactions for all to authenticated using(true) with check(true);
+create policy "auth goals" on goals for all to authenticated using(true) with check(true);
+create policy "auth purchases" on purchases for all to authenticated using(true) with check(true);
